@@ -3,7 +3,7 @@ module.exports = {
     name: "ai",
     version: "1.0.0",
     permission: 0,
-    credits: "Nayan",
+    credits: "Nirob",
     description: "",
     prefix: true,
     category: "user",
