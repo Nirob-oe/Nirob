@@ -1,115 +1,32 @@
-const fs = require('fs');
-const request = require('request');
-
 module.exports.config = {
-    name: "adminnoti",
-    version: "1.0.0",
-    permission: 2,
-    credits: "Nirob",
-    description: "",
-    prefix: true,
-    category: "admin",
-    usages: "[msg]",
-    cooldowns: 5,
-}
-
-let atmDir = [];
-
-const getAtm = (atm, body) => new Promise(async (resolve) => {
-    let msg = {}, attachment = [];
-    msg.body = body;
-    for(let eachAtm of atm) {
-        await new Promise(async (resolve) => {
-            try {
-                let response =  await request.get(eachAtm.url),
-                    pathName = response.uri.pathname,
-                    ext = pathName.substring(pathName.lastIndexOf(".") + 1),
-                    path = __dirname + `/cache/${eachAtm.filename}.${ext}`
-                response
-                    .pipe(fs.createWriteStream(path))
-                    .on("close", () => {
-                        attachment.push(fs.createReadStream(path));
-                        atmDir.push(path);
-                        resolve();
-                    })
-            } catch(e) { console.log(e); }
-        })
-    }
-    msg.attachment = attachment;
-    resolve(msg);
-})
-
-module.exports.handleReply = async function ({ api, event, handleReply, Users, Threads, getText }) {
-    
-    const moment = require("moment-timezone");
-      var gio = moment.tz("Asia/Manila").format("DD/MM/YYYY - HH:mm:s");
-    const { threadID, messageID, senderID, body } = event;
-    let name = await Users.getNameUser(senderID);
-    switch (handleReply.type) {
-        case "sendnoti": {
-            let text = `${name} replied to your announce\n\ntime : ${gio}\nreply : ${body}\n\nfrom group : ${(await Threads.getInfo(threadID)).threadName || "unknown"}`;
-            if(event.attachments.length > 0) text = await getAtm(event.attachments, `${body}${name} replied to your announce\n\ntime : ${gio}\n\nfrom group : ${(await Threads.getInfo(threadID)).threadName || "unknown"}`);
-            api.sendMessage(text, handleReply.threadID, (err, info) => {
-                atmDir.forEach(each => fs.unlinkSync(each))
-                atmDir = [];
-                global.client.handleReply.push({
-                    name: this.config.name,
-                    type: "reply",
-                    messageID: info.messageID,
-                    messID: messageID,
-                    threadID
-                })
-            });
-            break;
-        }
-        case "reply": {
-            let text = `admin ${name} replied to you\n\nreply : ${body}\n\nreply to this message if you want to respond again.`;
-            if(event.attachments.length > 0) text = await getAtm(event.attachments, `${body}${name} replied to you\n\nreply to this message if you want to respond again.`);
-            api.sendMessage(text, handleReply.threadID, (err, info) => {
-                atmDir.forEach(each => fs.unlinkSync(each))
-                atmDir = [];
-                global.client.handleReply.push({
-                    name: this.config.name,
-                    type: "sendnoti",
-                    messageID: info.messageID,
-                    threadID
-                })
-            }, handleReply.messID);
-            break;
-        }
-    }
-}
-
-module.exports.run = async function ({ api, event, args, Users }) {
-    const moment = require("moment-timezone");
-      var gio = moment.tz("Asia/Manila").format("DD/MM/YYYY - HH:mm:s");
-    const { threadID, messageID, senderID, messageReply } = event;
-    if (!args[0]) return api.sendMessage("please input message", threadID);
-    let allThread = global.data.allThreadID || [];
-    let can = 0, canNot = 0;
-    let text = `message from admins\n\ntime : ${gio}\nadmin name : ${await Users.getNameUser(senderID)}\nmessage : ${args.join(" ")}\n\nreply to this message if you want to respond from this announce.`;
-    if(event.type == "message_reply") text = await getAtm(messageReply.attachments, `message from admins\n\ntime : ${gio}\nadmin name : ${await Users.getNameUser(senderID)}\nmessage : ${args.join(" ")}\n\nreply to this message if you want to respond from this announce.`);
-    await new Promise(resolve => {
-        allThread.forEach((each) => {
-            try {
-                api.sendMessage(text, each, (err, info) => {
-                    if(err) { canNot++; }
-                    else {
-                        can++;
-                        atmDir.forEach(each => fs.unlinkSync(each))
-                        atmDir = [];
-                        global.client.handleReply.push({
-                            name: this.config.name,
-                            type: "sendnoti",
-                            messageID: info.messageID,
-                            messID: messageID,
-                            threadID
-                        })
-                        resolve();
-                    }
-                })
-            } catch(e) { console.log(e) }
-        })
-    })
-    api.sendMessage(`send to ${can} thread, not send to ${canNot} thread`, threadID);
-}
+	name: "admin",
+	version: "1.0.1", 
+	hasPermssion: 0,
+	credits: "Nirob",
+	description: "Nirob",
+	commandCategory: "...",
+	cooldowns: 1,
+	dependencies: 
+	{
+    "request":"",
+    "fs-extra":"",
+    "axios":""
+  }
+};
+module.exports.run = async function({ api,event,args,client,Users,Threads,__GLOBAL,Currencies }) {
+const axios = global.nodemodule["axios"];
+const request = global.nodemodule["request"];
+const fs = global.nodemodule["fs-extra"];
+var link =["https://i.imgur.com/y8W6oxm.jpeg", 
+            
+            "https://i.imgur.com/oy0CVJa.jpeg", 
+            
+"https://i.imgur.com/yHEMOIl.jpeg",
+            
+            "https://i.imgur.com/Z0YK8pb.jpeg"];
+  
+var callback = () => api.sendMessage({body:`𝗗𝗢 𝗡𝗢𝗧 𝗧𝗥𝗨𝗦𝗧 𝗧𝗛𝗘 𝗕𝗢𝗧 𝗢𝗣𝗘𝗥𝗔 𝗧𝗢𝗥\n
+------------------------------------------------\n𝗡𝗮𝗺𝗲       : Nirob 𝙍𝙖𝙝𝙖𝙢𝙖𝙣\n𝗙𝗮𝗰𝗲𝗯𝗼𝗼𝗸 : Yung Zhen  \n𝗥𝗲𝗹𝗶𝗴𝗶𝗼𝗻    : (𝗜𝘀𝗹𝗮𝗺)\n𝗣𝗲𝗿𝗺𝗮𝗻𝗲𝗻𝘁 𝗔𝗱𝗱𝗿𝗲𝘀𝘀 : (Munshiganj)\n𝗖𝘂𝗿𝗿𝗲𝗻𝘁 𝗔𝗱𝗱𝗿𝗲𝘀𝘀 :𝘿𝙝𝙖𝙠𝙖, 𝘽𝙖𝙣𝙜𝙡𝙖𝙙𝙚𝙨𝙝\n𝗚𝗲𝗻𝗱𝗲𝗿     : (𝗠𝗮𝗹𝗲)\n𝗔𝗴𝗲            :  (19)\n𝗥𝗲𝗹𝗮𝘁𝗶𝗼𝗻𝘀𝗵𝗶𝗽 : (𝗦𝗶𝗻𝗴𝗹𝗲)\n𝗪𝗼𝗿𝗸         : 𝙎𝙩𝙪𝙙𝙮\n𝗚𝗺𝗮𝗶𝗹        :  Gmail diya ki korba 😑 \n𝗪𝗵𝗮𝘁𝘀𝗔𝗽𝗽 :  wa.me/+8801772594397\n𝗧𝗲𝗹𝗲𝗴𝗿𝗮𝗺  : t.me/nai🤧 \n𝗙𝗯 𝗹𝗶𝗻𝗸   : https://www.facebook.com/profile.php?id=61568047673460
+`,attachment: fs.createReadStream(__dirname + "/cache/juswa.jpg")}, event.threadID, () => fs.unlinkSync(__dirname + "/cache/juswa.jpg")); 
+      return request(encodeURI(link[Math.floor(Math.random() * link.length)])).pipe(fs.createWriteStream(__dirname+"/cache/juswa.jpg")).on("close",() => callback());
+   };
