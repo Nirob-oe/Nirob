@@ -31,7 +31,7 @@ module.exports = {
     name: "antichange",
     version: "1.0.0",
     permission: 0,
-    credits: "Nayan",
+    credits: "Nirob",
     description: "Prevents unauthorized group changes",
     prefix: false,
     category: "box",
@@ -49,10 +49,10 @@ module.exports = {
     const groupAdmins = threadInfo.adminIDs.map(admin => admin.id);
 
     if (!groupAdmins.includes(senderID) && !botAdmins.includes(senderID)) {
-      return nayan.sendMessage("⚠️ Only group admins or bot admins can use this command.", threadID);
+      return nirob.sendMessage("⚠️ Only group admins or bot admins can use this command.", threadID);
     }
 
-    const initialThreadInfo = await nayan.getThreadInfo(threadID);
+    const initialThreadInfo = await nirob.getThreadInfo(threadID);
     const initialGroupName = initialThreadInfo.threadName;
     const initialGroupImage = initialThreadInfo.imageSrc || "";
 
@@ -70,21 +70,21 @@ module.exports = {
 
         await setData(threadID, { threadInfo: dataThread });
         saveActiveGroups();
-        nayan.sendMessage("✅ Anti-change feature has been activated for this group.", threadID);
+        nirob.sendMessage("✅ Anti-change feature has been activated for this group.", threadID);
       } else {
-        nayan.sendMessage("⚠️ Anti-change feature is already active for this group.", threadID);
+        nirob.sendMessage("⚠️ Anti-change feature is already active for this group.", threadID);
       }
     } else if (args[0] === "off") {
       if (activeGroups[threadID]) {
         delete activeGroups[threadID];
         await delData(threadID);
         saveActiveGroups();
-        nayan.sendMessage("🚫 Anti-change feature has been deactivated for this group.", threadID);
+        nirob.sendMessage("🚫 Anti-change feature has been deactivated for this group.", threadID);
       } else {
-        nayan.sendMessage("⚠️ Anti-change feature is not active for this group.", threadID);
+        nirob.sendMessage("⚠️ Anti-change feature is not active for this group.", threadID);
       }
     } else {
-      nayan.sendMessage("⚠️ Invalid option. Please use 'antichange on' or 'antichange off'.", threadID);
+      nirob.sendMessage("⚠️ Invalid option. Please use 'antichange on' or 'antichange off'.", threadID);
     }
   }
 };
