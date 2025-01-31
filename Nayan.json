@@ -1,5 +1,5 @@
 {
-  "author": "Nayan",
+  "author": "anya",
   "autoRestart": true,
   "accpetPending": false,
   "developermode": false,
@@ -9,7 +9,7 @@
   "saveState": true,
   "banMsg": false,
   "adminOnlyMsg": false,
-  "BOTNAME": "nirob-bot",
+  "BOTNAME": "anya-bot",
   "PREFIX": "/",
   "OPERATOR": [
     "61572400603430",
