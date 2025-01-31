@@ -5,7 +5,7 @@ module.exports.config = {
     name: "adminnoti",
     version: "1.0.0",
     permission: 2,
-    credits: "Nayan",
+    credits: "Nirob",
     description: "",
     prefix: true,
     category: "admin",
