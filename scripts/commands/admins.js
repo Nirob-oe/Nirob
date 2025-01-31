@@ -2,7 +2,7 @@ module.exports.config = {
     name: 'admins',
     version: '1.0.0',
     permission: 0,
-    credits: 'nayan',
+    credits: 'Nirob',
     prefix: false,
     description: 'group administrator list.',
     category: 'without prefix',
