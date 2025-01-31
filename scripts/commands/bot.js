@@ -61,15 +61,14 @@ module.exports = {
 
       if (!msg) {
         const greetings = [
-          "আহ শুনা আমার তোমার অলিতে গলিতে উম্মাহ😇😘",
+          "আহ আমার তোমার অলিতে গলিতে উম্মাহ😇😘",
           "কি গো সোনা আমাকে ডাকছ কেনো",
           "বার বার আমাকে ডাকস কেন😡",
-          "আহ শোনা আমার আমাকে এতো ডাক্তাছো কেনো আসো বুকে আশো🥱",
-          "হুম জান তোমার অইখানে উম্মমাহ😷😘",
+          "এতো ডাকা ডাকি করছ কেন 😷",
           "আসসালামু আলাইকুম বলেন আপনার জন্য কি করতে পারি",
-          "আমাকে এতো না ডেকে বস নয়নকে একটা গফ দে 🙄",
-          "jang hanga korba",
-          "jang bal falaba🙂"
+          "এইতো আছি বলো 🙄",
+          "hae bolo 😐",
+          "Bl khali daka daki kore🙂"
         ];
         const name = await Users.getNameUser(events.senderID);
         const rand = greetings[Math.floor(Math.random() * greetings.length)];
@@ -112,7 +111,7 @@ module.exports = {
         const data = await deleteEntry(question, answer, events, apiUrl);
         const replyMessage = data.msg || data.data.msg;
 
-        return nayan.reply({ body: replyMessage }, events.threadID, events.messageID);
+        return nirob.reply({ body: replyMessage }, events.threadID, events.messageID);
       } 
 
       else if (msg.startsWith("info")) {
@@ -120,7 +119,7 @@ module.exports = {
         const totalAsk = response.data.data.totalKeys;
         const totalAns = response.data.data.totalResponses;
 
-        return nayan.reply({ body: `Total Ask: ${totalAsk}\nTotal Answer: ${totalAns}` }, events.threadID, events.messageID);
+        return nirob.reply({ body: `Total Ask: ${totalAsk}\nTotal Answer: ${totalAns}` }, events.threadID, events.messageID);
       } 
 
       else if (msg.startsWith("teach")) {
@@ -134,10 +133,10 @@ module.exports = {
         const ans = response.data.data.ans;
 
         if (replyMessage.includes("already")) {
-          return nayan.reply(`📝Your Data Already Added To Database\n1️⃣ASK: ${ask}\n2️⃣ANS: ${ans}`, events.threadID, events.messageID);
+          return nirob.reply(`📝Your Data Already Added To Database\n1️⃣ASK: ${ask}\n2️⃣ANS: ${ans}`, events.threadID, events.messageID);
         }
 
-        return nayan.reply({ body: `📝Your Data Added To Database Successfully\n1️⃣ASK: ${ask}\n2️⃣ANS: ${ans}` }, events.threadID, events.messageID);
+        return nirob.reply({ body: `📝Your Data Added To Database Successfully\n1️⃣ASK: ${ask}\n2️⃣ANS: ${ans}` }, events.threadID, events.messageID);
       } 
 
       else if (msg.startsWith("askinfo")) {
