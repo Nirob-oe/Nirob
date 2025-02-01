@@ -48,7 +48,7 @@ module.exports.run = async function({ api, event, Users }) {
   if (event.logMessageData.addedParticipants && Array.isArray(event.logMessageData.addedParticipants) && event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
     //api.changeNickname(`𝗕𝗢𝗧 ${(!global.config.BOTNAME) ? "Buddy" : global.config.BOTNAME}`, threadID, api.getCurrentUserID());
 
-    let gifUrl = 'https://postimg.cc/75kqTvTN';
+    let gifUrl = 'https://i.postimg.cc/cLB1wdcG/https-c-tenor-com-Ub-QBW6a-VISQAAAAC-spy-x-family-anya.gif';
 let gifPath = __dirname + '/Nayan/join/join.gif';
 
 axios.get(gifUrl, { responseType: 'arraybuffer' })
@@ -56,7 +56,7 @@ axios.get(gifUrl, { responseType: 'arraybuffer' })
     fs.writeFileSync(gifPath, response.data);
   if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
     api.changeNickname(`[ ${global.config.PREFIX} ] • ➠${(!global.config.BOTNAME) ? "bot" : global.config.BOTNAME}`, threadID, api.getCurrentUserID());
-    return api.sendMessage("চলে এসেছি আমি পিচ্চি আনায়া তোমাদের মাঝে🤭!", event.threadID, () => api.sendMessage({ body: `${global.config.BOTNAME} CONNECTED«\n\nAssalamualaykum☘️
+    return api.sendMessage("চলে এসেছি আমি পিচ্চি আনায়া তোমাদের মাঝে🤭!", event.threadID, () => api.sendMessage({ body: `${global.config.BOTNAME} CONNECTED«\n\nAssalamualaykum☘️
 <------------------------------>  
 BOT CONNECTED SUCCESFUL !!! 
 
@@ -70,11 +70,11 @@ DEVELOPER :Yung Zhen
 
 🟣Facebook Account Link: 
 
-https://www.facebook.com/profile.php?id=61568047673460
+https://www.facebook.com/kakashi77hatake
 
-🔵WHATSAPP NUMBER: wa.me/+8801*******
+🔵WHATSAPP NUMBER: wa.me/+8801*********
 
-🟢SUPPORT EMAIL: www....gmail.com`, attachment: fs.createReadStream(gifPath)}, threadID));
+🟢SUPPORT EMAIL: www...…....@gmail.com`, attachment: fs.createReadStream(gifPath)}, threadID));
   }})
 .catch(error => {
     console.error(error);
@@ -110,7 +110,7 @@ https://www.facebook.com/profile.php?id=61568047673460
           'https://i.imgur.com/oy0CVJa.jpeg',
           'https://i.imgur.com/yHEMOIl.jpeg',
           'https://i.imgur.com/Z0YK8pb.jpeg',
-          'https://i.imgur.com/oauKWTY.jpeg'
+          'https://i.imgur.com/FsFO0d0.jpeg'
         ]
         let background = (await axios.get(encodeURI(`${ok[Math.floor(Math.random() * ok.length)]}`), { responseType: "arraybuffer", })).data;
         fs.writeFileSync(pathAva, Buffer.from(avtAnime, "utf-8"));
@@ -184,4 +184,5 @@ https://www.facebook.com/profile.php?id=61568047673460
       }
     } catch (e) { return console.log(e) };
   }
-}
+                                                                                                                                                     }
+      
