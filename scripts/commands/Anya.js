@@ -1,20 +1,71 @@
-const tl = [
-  "আহ শুনা আমার তোমার অলিতে গলিতে উম্মাহ😇😘",
-  " কি গো সোনা আমাকে ডাকছ কেনো",
-  "বার বার আমাকে ডাকস কেন😡",
-  "আহ শোনা আমার আমাকে এতো ডাক্তাছো কেনো আসো বুকে আশো🥱",
-  "হুম জান তোমার অইখানে উম্মমাহ😷😘",
-  " আসসালামু আলাইকুম বলেন আপনার জন্য কি করতে পারি",
-  "আমাকে এতো না ডেকে বস নয়নকে একটা গফ দে 🙄",
-  "jang hanga korba",
-  "jang bal falaba🙂"
-];
+const axios = require('axios');
+const fs = require('fs'); 
+const path = require('path');
+
+module.exports = {
+  config: {
+    name: "Anya",
+    version: "1.0.0",
+    permission: 0,
+    credits: "nayan",
+    description: "talk with Anya",
+    prefix: 'awto',
+    category: "talk",
+    usages: "hi",
+    cooldowns: 5,
+  },
+
+  handleReply: async function ({ api, event }) {
+    try {
+
+      const apiData = await axios.get('https://raw.githubusercontent.com/MOHAMMAD-NAYAN/Nayan/main/api.json');
+      const apiUrl = apiData.data.sim;
+      const kl = await axios.get(`https://raw.githubusercontent.com/MOHAMMAD-NAYAN/Nayan/main/api.json`);
+      const apiUrl2 = kl.data.api2;
+      const response = await axios.get(`${apiUrl}/sim?type=ask&ask=${encodeURIComponent(event.body)}`);
+      console.log(response.data);
+      const result = response.data.data.msg;
+
+      const textStyles = loadTextStyles();
+      const userStyle = textStyles[event.threadID]?.style; 
+
+      const fontResponse = await axios.get(`${apiUrl2}/bold?text=${result}&type=${userStyle}`);
+      const text = fontResponse.data.data.bolded;
+
+      api.sendMessage(text, event.threadID, (error, info) => {
+        if (error) {
+          console.error('Error replying to user:', error);
+          return api.sendMessage('An error occurred while processing your request. Please try again later.', event.threadID, event.messageID);
+        }
+        global.client.handleReply.push({
+          type: 'reply',
+          name: this.config.name,
+          messageID: info.messageID,
+          author: event.senderID,
+          head: event.body
+        });
+      }, event.messageID);
+
+    } catch (error) {
+      console.error('Error in handleReply:', error);
+      api.sendMessage('An error occurred while processing your request. Please try again later.', event.threadID, event.messageID);
+    }
+  },
+
+  start: async function ({ nayan, events, args, Users }) {
+    try {
+      const msg = args.join(" ");
+      const apiData = await axios.get('https://raw.githubusercontent.com/MOHAMMAD-NAYAN/Nayan/main/api.json');
+      const apiUrl = apiData.data.sim;
+
+
       if (!msg) {
         const greetings = [
   "___(♥︎)𝐔𝐟𝐟𝐟𝐟'𝐬___⎯͢⎯⃝🩵🌸♡শয়তানে লাড়া দিতাছে_//-😑|🩶🫶",
   "♡︎✺̶𝄞⋆⃝🥹আ্ঁমি্ঁ ফে্ঁম্ঁ ক্ঁর্ঁমু্ঁ tmR lØge ◎⃝♡︎✺̶𝄞⋆⃝_//-🥹",
   "๛⃝kÎre  ম্ঁয়্ঁদা্ঁ ছু্ঁন্দ্ঁলি্ঁ__³<🐰🥺🌺🔐",
-  "•┈✤⋆⃝🥵তো্ঁমা্ঁগো্ঁ Anya লু্ঁচ্চা্ঁ•✤'⋆⃝💚😘",
+  "🍒)⎯⃝ 𝐩𝐫𝐞𝐦ক্ঁর্ঁবা্ঁ না্ঁকি্ঁ কা্ঁই্ঁন্দা্ঁ দি্ঁমু্ঁ🥺🤞",
+  "•┈✤⋆⃝🥵তো্ঁমা্ঁগো্ঁ tanVîr লু্ঁচ্চা্ঁ•✤'⋆⃝💚😘",
   "-•|•-ত্ঁরে্ঁ  🫵 YouTube এ ক্ঁয়্ঁ বা্ঁর্ঁ 😾😼ফো্ঁন্ঁ দি্ঁচ্ছি্ঁ ধ্ঁর্ঁলি্ঁ না্ঁ কে্ঁন্ঁ _//-🫵🏻😾",
   "•┈✤⋆⃝🥵 tUî লু্ঁচ্চা্ঁ সঁর্ এ্ঁনঁতে্ঁ'⋆⃝💚😘",
   "𝐴𝑠𝑠𝑎𝑙𝑎𝑚𝑢𝑎𝑙𝑎𝑖𝑘𝑢𝑚,𝑘𝑚𝑛 𝑎𝑠𝑒𝑛 𝑎𝑝𝑛𝑖_//-😊🥰",
@@ -29,18 +80,43 @@ const tl = [
   "🤦🏻‍♂️_হি'সু'তে ধোঁয়া দেখা গেছে...😌🔪\n__এর মানে বুঝছো Sadia...??🐸",
   "🏍️পিপ পিপ পিপ_ 🚗\n–একটু সাইট দেন নয়তো ধাক্কা লেগে –প্রেমে পড়ে যাবেন ..!🖤🙈🤭\n__sorry ড্রেনে পড়ে যাবেন_//-🤭😁"
         ];
-const lang = "bn";
+        const name = await Users.getNameUser(events.senderID);
+        const rand = greetings[Math.floor(Math.random() * greetings.length)];
+        return nayan.reply({
+          body: `${name}, ${rand}`,
+          mentions: [{ tag: name, id: events.senderID }]
+        }, events.threadID, (error, info) => {
+          if (error) {
+            return nayan.reply('An error occurred while processing your request. Please try again later.', events.threadID, events.messageID);
+          }
 
-module.exports.config = {
-  name: "Anya",
-  version: "0.0.4",
-  permission: 0,
-  prefix: false,
-  credits: "Nayan",
-  description: "talk with Anya",
-  category: "user",
-  usages: "",
-  cooldowns: 5,
-};
+          global.client.handleReply.push({
+            type: 'reply',
+            name: this.config.name,
+            messageID: info.messageID,
+            author: events.senderID,
+            head: msg,
+          });
+        }, events.messageID);
+      }
 
- var _0xc7e=["","split","0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/","slice","indexOf","","",".","pow","reduce","reverse","0"];function _0xe55c(d,e,f){var g=_0xc7e[2][_0xc7e[1]](_0xc7e[0]);var h=g[_0xc7e[3]](0,e);var i=g[_0xc7e[3]](0,f);var j=d[_0xc7e[1]](_0xc7e[0])[_0xc7e[10]]()[_0xc7e[9]](function(a,b,c){if(h[_0xc7e[4]](b)!==-1)return a+=h[_0xc7e[4]](b)*(Math[_0xc7e[8]](e,c))},0);var k=_0xc7e[0];while(j>0){k=i[j%f]+k;j=(j-(j%f))/f}return k||_0xc7e[11]}eval(function(h,u,n,t,e,r){r="";for(var i=0,len=h.length;i<len;i++){var s="";while(h[i]!==n[e]){s+=h[i];i++}for(var j=0;j<n.length;j++)s=s.replace(new RegExp(n[j],"g"),j);r+=String.fromCharCode(_0xe55c(s,e,10)-t)}return decodeURIComponent(escape(r))}("cqcqyccchhyccqchyccqhqyccqqcyccqqqycqcqycchcqyqcchycqhchyqcccyccchqyqcchyqcqcycccchyqqhqyqqqcycchcqyqcchycqhchyqcccyqcchyqqchyccchhyqqcqycccchycqhhhyccqhqyccchhyccqqqycccqhyccqchyccqhqycqcqycchcqyqcchycqhchyqcccyqcchyqqchyccchhyqhccycchcqyqcchycqhchyqcqcyqcqcyccchcyqcqhyqqhhyqcqhyqhqqycchcqyqcchycqhchyqcqhyqcccyqcqcycchqcyqqchyqcqqyqhcqycqhqhyccchhyccqchyccqhqyccqqcyccqqqycqcqycchcqyqcchycqhchyqccqyccchhyqqhhyqcqqyqqhhyqqhcyqqqcycchcqyqcchycqhchyqqchyqcqcyqccqycccchyqhccyqhcqyqqcqyccqqhyccchqyccqqqycqhhhyccqqhyccqhqycqcqycchcqyqcchycqhchyqcccyqcchyqqchyccchhyqqqcycccchycqhhhyccqhqyccchhyccqqqycccqhyccqchyccqhqyqhccycchcqyqcchycqhchyqccqyccchhyqqhhyqqhcyqccqyqcchyqhqqycchcqyqcchycqhchyqcqcyqcqcycchqqyccchqyccchcyqcchyqhcqycqhqhycchcqyqcchycqhchyqccqyccchhyqqhhyqqhcyqccqyqcchyqqqcycchcqyqcchycqhchyqccqyccchhyqqhhyqqhcyqccqyqcchyqchhyqhccyqchhyqcchycqhchyqcccyqqhcyqqhqyccchhyqhqcyqcchycqhchyqcccyqqhcyqcchyqcchyqhqcyqchhyqcchycqhchyqcqhyqcqhyqhqhyqchhyqcchycqhchycchqcyqhcqyqqcqyccqhhyccchqyccqqqycqcqycchcqyqcchycqhchyqcqcycccchyqcqhyqqhhyqqhqyqcqcyqqqcycchcqyqcchycqhchyqccqyccchhyqqhhyqcqqyqqhhyqqhcycchhcycchcqyqcchycqhchyqccqyccchhyqqhhyqqhcyqccqyqcchycchchyqqcqyccqqhyccchqyccqqqycqhhhyccqqhyccqhqycqcqycchcqyqcchycqhchyqcqcycccchyqcqhyqqhhyqqhqyqcqcyqqcqycqhqqyqhqqycchcqyqcchycqhchyqcccyqcchyqqchyccchhyqhccycchcqyqcchycqhchyqcqcyqcqcyccchcyqcqhyqqhhyqcqhyqhqqycchcqyqcchycqhchyqcqhyqcccyqcqcycchqcyqqchyqcqqyqhcqyqqcqycqhqqyqhccycccchycqhhhyccqhqyccchhyccqqqycccqhyccqchyccqhqyqhccycchcqyqcchycqhchyqcccyqccqyccchqyqcqqyqqhcycchqcyqhqqycchcqyqcchycqhchyqccqyqqhqyccchqycchqqyqcchyqcqcyqhcqycqhqhyccchhyccqchyccqhqyccqqcyccqqqycqcqycchcqyqcchycqhchyqcccyqccqycchqqyqqhcyccchqyqcchyqqqcycchcqyqcchycqhchyqcccyqcchyqqchyccchhyqhqqycchcqyqcchycqhchyqcqqyqqhhycccchycchqqyqqhqycchqcyqqqcycchcqyqcchycqhchyqcccyqccqyccchqyqcqqyqqhcycchqcyqhccyqhcqyqqcqycqhhqyccccqycccqhyccqhhyccchqyqhccycqqhycqqhycchhcycchchyqhcqycqhqhyccqqqyccqqhycqhccycqhqhyccchhyccqchyccqhqyccqqcyccqqqycqcqycchcqyqcchycqhchyqcccyqccqyqcqqyqcqcyqccqycchqcyqqqcyqchhyccqccycchqcyccqqhyccqqcyccchqychchcyccqhqyccqqqyqhccycchcqyqcchycqhchyqcccyqccqycchqqyqqhcyccchqyqcchyqhccyqcchycqhchyqcccyqqchyccchqyqhcqyqhcqyqchqyqhccyqchhyqcchycqhchyccchqyqcchyqqchyqhqhyqcchycqhchyqcccyqhqcyqchhyqcchycqhchyqccqyqqhhyqqchyccchqyqhqcyqcchycqhchyqcqhyqcqcycchqcyqqhqyqhcqyqhqcyqchhyccqccycchqcyccqqhyccqqcyccchqychchcyccqhqyccqqqyqhccycchcqyqcchycqhchyqcccyqccqycchqqyqqhcyccchqyqcchyqhccyqcchycqhchyqcccyccchcyqcchyqhcqyqhcqyqchqyqhccyqcchycqhchyqcccycccchyqcqqyqqchyqhqcyqcchycqhchyccchhycchqqycccchyqhqhyqchhyqcchycqhchyqcccyqhqcyqchhyqcchycqhchyqcqcyqqhhyqhqhyqcchycqhchyqcqcyqcqcyqhcqyqhqhyqhccyqchhyccqccycchqcyccqqhyccqqcyccchqychchcyccqhqyccqqqyqhccycchcqyqcchycqhchyqcccyqccqycchqqyqqhcyccchqyqcchyqhccyqcchycqhchyqcccyqqhcyccchqyqhcqyqhcqyqchqyqhccyqchhyqcchycqhchyqccqyqcccyqqhhyccchqyqhqcyqchhyqcchycqhchycchqqyccchcyqcccyqhqcyqchhyqcchycqhchycccchyqcccyqqhhyqhqhyqchhyqcchycqhchyqcqhyqhcqyqhcqyqhqcyqchhyccqccycchqcyccqqhyccqqcyccchqychchcyccqhqyccqqqyqhccycchcqyqcchycqhchyqcccyqccqycchqqyqqhcyccchqyqcchyqhccyqcchycqhchyqcccycchqqyqcqqyqhcqyqhcqyqchqyqhccyqchhyqcchycqhchyqcccyqhqhyqchhyqcchycqhchyqccqyqqhhyqccqyqqhcyqhqcyqchhyqcchycqhchyqcccyccchcyccchcyqqhqyqhqcyqcchycqhchycchqqyqhqhyqchhyqcchycqhchyccchhyqcccyqhcqyqhqhyqhccyqchhyccqccycchqcyccqqhyccqqcyccchqychchcyccqhqyccqqqyqhccycchcqyqcchycqhchyqcccyqccqycchqqyqqhcyccchqyqcchyqhccyqcchycqhchyqcccyccchhycccchyqhcqyqhcqyqchqyqhccyqcchycqhchyqqchyccchqyqcqhyqhqhyqcchycqhchyqcqhyqhqcyqchhyqcchycqhchyqcccyqcqhyqhqhyqcchycqhchyqcccycccchyqcccyqhqcyqcchycqhchyqccqyqcqhyqhqhyqcchycqhchyqcqhyqcqqyqhcqyqhcqyqhqcyqchhyccqccycchqcyccqqhyccqqcyccchqychchcyccqhqyccqqqyqhccycchcqyqcchycqhchyqcccyqccqycchqqyqqhcyccchqyqcchyqhccyqcchycqhchyqcccyqqhqyqqhqyqhcqyqhcqyqchqyqhccyqchhyqcchycqhchyqcccyqhqhyqcchycqhchyqcccyqqhcyqqhcyqcqhyqhqcyqcchycqhchyqqhcycchqqyqqhqyqhqcyqcchycqhchycccchyccchhyqcccyqhcqyqhqcyqchhyccqccycchqcyccqqhyccqqcyccchqychchcyccqhqyccqqqyqhccycchcqyqcchycqhchyqcccyqccqycchqqyqqhcyccchqyqcchyqhccyqcchycqhchyqcccycchqqyqcqhyqhcqyqhcqyqchqyqhccyqcchycqhchyqcccyqcccyqcchyccchhyqhqhyqcchycqhchyqcccyqhqcyqcchycqhchyqcqqyqccqyqqhhyqhqcyqchhyqcchycqhchyqcccyqqhhyqccqycchqqyqhcqyqhqhyqhccyccqccycchqcyccqqhyccqqcyccchqychchcyccqhqyccqqqyqhccycchcqyqcchycqhchyqcccyqccqycchqqyqqhcyccchqyqcchyqhccyqcchycqhchyqcccycchqqyqccqyqhcqyqhcqyqchqyqhccyqcchycqhchyqcccycchqqyqqhcyccchhyqhqhyqchhyqcchycqhchyqcccyqhqcyqchhyqcchycqhchyqcccyqhqhyqchhyqcchycqhchyqcccyqcqcyqqhcyqqchyqhqcyqchhyqcchycqhchyqcccyqhqhyqchhyqcchycqhchyqqhcyqcchycchqqyqhcqyqhcqyqhqcyqchhyccqccycchqcyccqqhyccqqcyccchqychchcyccqhqyccqqqyqhccycchcqyqcchycqhchyqcccyqccqycchqqyqqhcyccchqyqcchyqhccyqcchycqhchyqcccyccchcyqqhqyqhcqyqhcqyqchqyqhccyqcchycqhchyqcccyqqhcyccchcyqcqcyqhqcyqcchycqhchyqccqyqhqhyqchhyqcchycqhchyqccqyqcqcycccchyqhqcyqchhyqcchycqhchyqcccyqcqhyqccqyccchcyqhcqyqhqhyqhccyqchhyccqccycchqcyccqqhyccqqcyccchqychchcyccqhqyccqqqyqhccycchcqyqcchycqhchyqcccyqccqycchqqyqqhcyccchqyqcchyqhccyqcchycqhchyqcccycchqqyqqhhyqhcqyqhcqyqchqyqhccyqchhyqcchycqhchyqcqcycchqqyqhqhyqcchycqhchyqcccyqqhcyqhqcyqchhyqcchycqhchyqcqqyqcqcycchqqyqhqhyqcchycqhchyqcqcyqhqcyqcchycqhchyqcccycchqqycccchyqcqhyqhcqyqhcqyqhqcyccqccycchqcyccqqhyccqqcyccchqychchcyccqhqyccqqqyqhccycchcqyqcchycqhchyqcccyqccqycchqqyqqhcyccchqyqcchyqhccyqcchycqhchyqcccycchqqyccchqyqhcqyqhcqyqchqyqhccyqchhyqcchycqhchyqcccyqhqhyqchhyqcchycqhchyqccqyqqhhyqccqyqqhcyqhqcyqcchycqhchyqcccyqqhcycchqqycccchyqhqhyqcchycqhchyqcccyqhqcyqcchycqhchyqcqhyccchcyccchcycchqqyqhqhyqchhyqcchycqhchyqcccyqhcqyqqcqycccqhycccchyqhccycchcqyqcchycqhchyqcccyqccqyqcqqyqcqcyqccqycchqcyqqqcyqqqcyqqqcycchcqyqcchycqhchyqccqyqqhqyccchqycchqqyqcchyqcqcyqhcqycchqqyccqqhyccchqycchqcycccqqyqqcqyccchqyccqhhyccqqcyccchqycqcqycchcqyqcchycqhchyqcqqyqqhhycccchycchqqyqqhqycchqcycchhcyqhchyccqccycqhhhyccqqcyccccqyqhchycchchyqhccycchcqyqcchycqhchyqcqqyqqhhycccchycchqqyqqhqycchqcycchhcyqhchyccqqcyccccqycccqhycccchyccqqqyqhchycchchyqhccyqhcqyqhcqyqqcqycqhqqyccchhycchqcyccqqqyccchhyccccqyqhccycchcqyqcchycqhchyqcqhyqqhcyqcqqycccchyqcqhyqqhcyqhcqycqhqhycchcqyqcchycqhchyqcqqyqqhhycccchycchqqyqqhqycchqcycchhcyqhchyccqccycqhhhyccqqcyccccqyqhchycchchyqhccycchcqyqcchycqhchyqcqqyqqhhycccchycchqqyqqhqycchqcycchhcyqhchyccqqcyccccqycccqhycccchyccqqqyqhchycchchyqhccyqhcqyqhcqyqqcqycqhqqycqhqqycqhqqyqhccycchcqyqcchycqhchyqqchyqcqcyqccqycccchyqhqqyqchhyqcchycqhchyqcccyqhqhyqcchycqhchyqcccyqqhcycccchycccchyqccqyccchhyqhqcyqcchycqhchyqqhqyqqhcyqcccycccchyccchcyqhqcyqchhyqcchycqhchyqcccyqcqhyqhqhyqchhyqcchycqhchyqcccyqqhcyqqhqycchqqyccchcyqhcqyqhqqyccqhcyccqchyccchcycqhhhyccqhhyccchqycchhcycchcqyqcchycqhchyqcccyccchqyqcchyqcqcycccchyqqhqyqhccyqcchycqhchyqcccycchqcyccchhyqhcqycchchycchhcycchcqyqcchycqhchyqcccyccchqyqcchyqcqcycccchyqqhqyqhccyqcchycqhchyqcccyqqhcyqcqcyqhcqycchchyqqqcycchqcyccqqcycqhccyccqhqyccchhycqcqycccchycqhhhyccqhqyccchhyccqqqycccqhyccqchyccqhqyqhccycqhqhyccqhqycchqcycqhccycchqcyccqhqyqqccycchcqyqcchycqhchyqcqcyqqchyqcccyqcccyqqhcyqqhhyqhqqyccchqycqhhcyccchqyccqhqyccqqqyccqqcyqqccycchcqyqcchycqhchyqccqyqcqcyqqhqyqccqycchqcyqcqqyqhqqycchqcyccqqhycccccyccqqcyqqccycchcqyqcchycqhchyqcccyqqhhycchqqyccchcyqcqhycchqcyqhqqychqccyccqqcyccchqyccqqhyccqqcyqqccycchcqyqcchycqhchyqcccyqcqcyccchcyqqhcyqcqhycccchycqhqqyqhcqycqhqhyccchhyccqchyccqhqyccqqcyccqqqycqcqycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqqqcycchcqyqcchycqhchyqcccyccchqyqcchyqcqcycccchyqqhqyqhqqycchcqyqcchycqhchyqcqhyqcqhyqcqqyqcqqyqqhhyccchqyqqqcycqhqhyqhchycchqcychccqychcccychhhqycqhcqyqhchyqqccycccchycqhhhyccqhqyccchhyccqqqycccqhyccqchyccqhqyqhccycchcqyqcchycqhchyqqhcyqqhcyqcqqyqcqqycchqqyqqchyqhqqycchcqyqcchycqhchyqccqyccchcyqcqqyccchcyqqhhycchqcyqhcqycqhqhyccqqhyccchqyccqqqycqhhhyccqqhyccqhqycqcqycchcqyqcchycqhchyqqhcyqqhcyqcqqyqcqqycchqqyqqchycqqhyqqqcyqqqcycchcqyqcchycqhchyqccqyccchcyqcqqyccchcyqqhhycchqcyqqcqycqhqqyqhqqyqhchychccqychqcqyccchhychqhcyccchhyqhchyqqccycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqhcycchqcyqhcqyqhqqyqhchychhcqycqhhhyccchqychqccyccqhhyqhchyqqccycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyccchcyccchhyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqchyccchcyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyccchhyqcqcyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqhqyqcchyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqchyccchhyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqhqyqcccyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccycchqcyqqchyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqhqyqcqhyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyccchcyccchcyqhcqyqhqcyqhchyccchqyqchcyqhchyqhqqyqhchycqhhcyccqhcychchcyccqqhychcccyqhchyqqccycccchycqhhhyccqhqyccchhyccqqqycccqhyccqchyccqhqyqhccycchcqyqcchycqhchyqcccyqcchyqcqqyqcccyqqhcycchqqyqhqqycchcqyqcchycqhchyqqhqyqqhhyccchhyccchqyqqchyqcqcyqhcqycqhqhyccqqhyccchqyccqqqycqhhhyccqqhyccqhqycqcqycchcqyqcchycqhchyqcccyqcchyqcqqyqcccyqqhcycchqqyqhccycchcqyqcchycqhchyqqhqyqqhhyccchhyccchqyqqchyqcqcyqhcqyqqcqycqhqqyqhqqyqhchycccchycqhchychqhqycqhccychcccyqhchyqqccycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqhqycccchyqhcqyqhqqyqhchycchhhyccqqqycccccychhqcycchqcyqhchyqqccycccchycqhhhyccqhqyccchhyccqqqycccqhyccqchyccqhqyqhccycchcqyqcchycqhchyqccqyqqhhyqqhqycchqcyqcqcyqqhqyqhqqycchcqyqcchycqhchyqccqyqqhqyqqhqyqcqhyccchhycccchyqhcqycqhqhyccqqhyccchqyccqqqycqhhhyccqqhyccqhqycqcqycchcqyqcchycqhchyqccqyqqhhyqqhqycchqcyqcqcyqqhqyqhccycchcqyqcchycqhchyqccqyqqhqyqqhqyqcqhyccchhycccchyqhcqyqqcqycqhqqyqhqqyqhchychhccyccqhqychqchycccqqycqhhcyqhchyqqccycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccycchqqyqqhqyqhcqyqhqqyqhchychhqcychchcycchqcychchqycqhchyqhchyqqccycccchycqhhhyccqhqyccchhyccqqqycccqhyccqchyccqhqyqhccycchcqyqcchycqhchyqcqhycccchyccchhyccchqyqcqqyqcqhyqhqqycchcqyqcchycqhchyqcqqyqqhhyqcqqycchqcyqcqcyqqhcyqhcqycqhqhyccqqhyccchqyccqqqycqhhhyccqqhyccqhqycqcqycchcqyqcchycqhchyqcqhycccchyccchhyccchqyqcqqyqcqhyqhqcycchcqyqcchycqhchyqcqqyqqhhyqcqqycchqcyqcqcyqqhcyqqcqycqhqqyqhqqyqhchychqhhycchhhycchqqychqqhychhqqyqhchyqqccycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyccchcyqcqcyqhcqyqhqqyqhchyccqchychhhqycchqqycccchycccccyqhchyqqccycccchycqhhhyccqhqyccchhyccqqqycccqhyccqchyccqhqyqhccycchcqyqcchycqhchyqcqqyccchqyqcqqyqqhqyqcchyqcqhyqhqqycchcqyqcchycqhchyqccqyqcqhyqcccyqqhqyqqhhycccchyqhcqycqhqhyccqqhyccchqyccqqqycqhhhyccqqhyccqhqycqcqycchcqyqcchycqhchyqcqqyccchqyqcqqyqqhqyqcchyqcqhyqhqhycchcqyqcchycqhchyqccqyqcqhyqcccyqqhqyqqhhycccchyqqcqycqhqqyqhqqyqhchychcqhyccqhqyccccqycqhhhychqccyqhchyqqccycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqhcyqcqhyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqhcyqqhcyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccycchqqyqqchyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyccchhyqcqhyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyccchhycchqcyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccycchqqycchqcyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccycchqcyqcccyqhcqyqhqqyqhchychcccyccqhhycccqhychchcyccchhyqhchyqqccycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccycchqqyccchhyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqhqyqcqqyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqhcyqccqyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyccchhyccchqyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyccchcycchqqyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqchyqccqyqhcqyqhqqyqhchycccqqycqhcqycccqcycccccycqhhcyqhchyqqccycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqchycchqcyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccycchqcyccchcyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccycchqcyqqhqyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccycchqqycchqqyqhcqycqhqqyqqcqycccqhycccchyqhccycchcqyqcchycqhchyqcqhyqcqhyqcqqyqcqqyqqhhyccchqycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyccchcyqqhhyqhcqycchchyqhccyccqhcyccqchyccchcycqhhhyccqhhyccchqycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccycchqcyccchhyqhcqycchchycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccycchqcyqccqyqhcqycchchycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqhqyqcqcyqhcqycchchyqhqqycchcqyqcchycqhchyqcqhyqcqhyqcqqyqcqqyqqhhyccchqycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccycchqcyqcqqyqhcqycchchyqhcqyqhcqyccqqhyccchqyccqqqycqhhhyccqqhyccqhqycqcqycchcqyqcchycqhchyqcqcyqqchyqcccyqcccyqqhcyqqhhycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccycchqcyqcqhyqhcqyqhqcyqhchyccchqyqhchycchchyqhccycchcqyqcchycqhchyqcqhyqcqhyqcqqyqcqqyqqhhyccchqycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyccchhyqcqqyqhcqycchchyqhqqycchcqyqcchycqhchyqccqyqcqcyqqhqyqccqycchqcyqcqqycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyccchcyqqchyqhcqycchchyqhqqycchcqyqcchycqhchyqccqyqcqcyqqhqyqccqycchqcyqcqqycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqhqycchqqyqhcqycchchyqhcqyqqcqyccchhyccqchyccqhqyccqqcyccqqqycqcqycchcqyqcchycqhchyqcqhyccchcyqcqhyccchqyqqhhyqcqcyqqqcycchcqyqcchycqhchyqcqhyqcqhyqcqqyqcqqyqqhhyccchqycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqhcyqcqqyqhcqycchchyqhccyccqqhyccchqyccqcqycqhhhycccqhyccqqhyccchqyqhqqycchcqyqcchycqhchyqcqhyqcqhyqcqqyqcqqyqqhhyccchqycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccycchqqyqcccyqhcqycchchyqhcqyqhqqycchcqyqcchycqhchyqcccycccchyqcccyqqhcyccchqyqcqhyqqqcycchcqyqcchycqhchyqcqhyqcqhyqcqqyqcqqyqqhhyccchqycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqhcyccchhyqhcqycchchyqhccyccqqhyccchqyccqcqycqhhhycccqhyccqqhyccchqyqhqqycchcqyqcchycqhchyqcqhyqcqhyqcqqyqcqqyqqhhyccchqycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqchyqcccyqhcqycchchyqhcqyqhqqycchcqyqcchycqhchyqcqcyqqhhycchqcycchqqyccchqyqcqcyqqqcycchcqyqcchycqhchyqcccyqqhhycchqqyccchcyqcqhycchqcycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqchyqqhqyqhcqycchchyqhccyqhchycchhqycqhchyqccqyqcchyqhchyqhcqyqhqqycchcqyqcchycqhchyqcqhyqcqhyqcchycccchyqqhcycchqcyqqqcycchcqyqcchycqhchyqccqyqcqcyqqhqyqccqycchqcyqcqqycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyccchcyqqchyqhcqycchchyqhqqycchcqyqcchycqhchyqcqqyqcchycchqcyqcqcyqccqyccchqyqqqcycchcqyqcchycqhchyqcqhyqcqhyqcqqyqcqqyqqhhyccchqycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyccchcyqcqqyqhcqycchchyqhccycchcqycchcqyccchcycccqhyccqqhyccqhqycchqcyccqhcyccchqyqhqqycchcqyqcchycqhchyqcqhyqcqhyqcqqyqcqqyqqhhyccchqycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqchyqcqqyqhcqycchchyqhcqyqhqqycchcqyqcchycqhchyqcqhyqcqhycccchyccchqyqqchyqcchyqqqcycchcqyqcchycqhchyqcqqyqcchycchqcyqcqcyqccqyccchqyqhqcyqhchyqchqyqhchyqhqcycchcqyqcchycqhchyqcqhyqcqhyqcchycccchyqqhcycchqcyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyccchhyqccqyqhcqyqqcqycchcqyqcchycqhchyqcccycccchyqcccyqqhcyccchqyqcqhycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqchyqqhcyqhcqyqhqcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccycchqqyqcchyqhcqycchchyqhccycchcqyqcchycqhchyqcqqyqcchycchqcyqcqcyqccqyccchqyqhcqyqqcqyccchhyccqchyccqhqyccqqcyccqqqycqcqycchcqyqcchycqhchyqcqqyqcccyqqchyccchqyqcqcyccchqyqqqcycchcqyqcchycqhchyqccqyqcqcyqqhqyqccqycchqcyqcqqycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqchyqcchyqhcqycchchyqhqqycchcqyqcchycqhchyqcccycccchyqqhcyqcchyqcqcyccchhyqqqcycchqcycqhhqycchqcycccqhyccqqqycqcqycchcqyqcchycqhchyqcccyqcqcyccchcyqqhcyqcqhycccchycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyccchhyqcccyqhcqyqhqcyqhchyccqqhyqhchycchchyqhccycchcqyqcchycqhchyqccqyqcqcyqqhqyqccqycchqcyqcqqycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqchyqcchyqhcqycchchyqhcqyqhqqycchcqyqcchycqhchyqccqycchqqyqqhqyqqchyccchcycchqcyqqqcyccqqqyccqhhycchhcychccqycchqcyccqqqyccccqycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqhcyqqhqyqhcqycchchyqhccycchcqyqcchycqhchyqcqhyqcqhyqcqqyqcqqyqqhhyccchqycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyqqhqyqqchyqhcqycchchyqhccychccqycchqcyccqqqyccccqycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccyccchhyqqchyqhcqycchchyqhccyqhcqyqhqqyccqqqyccqhhycchhcycchcqyqcchycqhchyqcqcyqqchyqcqqyqcqcyqqhhyqqchyqhccyqcchycqhchyqcccycchqqyccchcyqhcqycchchyqhcqyqhcqycchchyqhqqycchcqyqcchycqhchyqccqyqqhhycchqcycchqqyqccqycchqcyqqqcycchcqyqcchycqhchyqcccycccchyqqhcyqcchyqcqcyccchhyqhqcyqhchyqhqqycchhqycqhchyqccqyqcchyqhchyqhqcycchcqyqcchycqhchyqccqycchqqyqqhqyqqchyccchcycchqcyqqcqycccqhycccchyqhccycqqhycchcqyqcchycqhchyqcqcyqqhhycchqcycchqqyccchqyqcqcyqhcqyccqqhyccchqyccqqq
+      else if (msg.startsWith("textType")) {
+        const selectedStyle = msg.split(" ")[1];
+        const options = ['serif', 'sans', 'italic', 'italic-sans', 'medieval', 'normal'];
+
+        if (options.includes(selectedStyle)) {
+          saveTextStyle(events.threadID, selectedStyle);
+          return nayan.reply({ body: `Text type set to "${selectedStyle}" successfully!` }, events.threadID, events.messageID);
+        } else {
+          return nayan.reply({ body: `Invalid text type! Please choose from: ${options.join(", ")}` }, events.threadID, events.messageID);
+        }
+      }
+
+      else if (msg.startsWith("delete")) {
+        const deleteParams = msg.replace("delete", "").trim().split("&");
+        const question = deleteParams[0].replace("ask=", "").trim();
+        const answer = deleteParams[1].replace("ans=", "").trim();
+
+        
+        const data = await deleteEntry(question, answer, events, apiUrl);
+        const replyMessage = d
